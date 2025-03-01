@@ -17,11 +17,17 @@ public class CloudinaryService {
 
 	@Autowired
 	private Cloudinary cloudinary;
+	
+	public static final String folderName = "CloudinaryImage";
 
 	public String uploadFile(MultipartFile file) {
 		try {
 			Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
-					ObjectUtils.asMap("transformation", "w_300,h_300,c_fill"));
+	                ObjectUtils.asMap(
+	                        "folder", folderName // Folder Name
+	                ));
+
+//					ObjectUtils.asMap("transformation", "w_300,h_300,c_fill"));
 			return uploadResult.get("url").toString(); // Get the uploaded file URL
 		} catch (IOException e) {
 			throw new RuntimeException("Error uploading file to Cloudinary", e);
@@ -56,4 +62,7 @@ public class CloudinaryService {
 		return urls;
 	}
 
+	public Map deleteImage(String publicId) throws IOException {
+		return cloudinary.uploader().destroy(folderName+"/"+publicId, ObjectUtils.asMap("invalidate", true));
+	}
 }
